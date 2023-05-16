@@ -17,7 +17,7 @@ typedef struct sockaddr info;
 
 void *receive(void* connectionfd) {
     int *clientfd = (int*) connectionfd;
-    char *buffer = malloc(sizeof(char) * 1024);
+    char *buffer = malloc(1024);
     bzero(buffer, 1024);
     int n = read(*clientfd, buffer, 1024);
     if(n < 0) {
@@ -25,8 +25,11 @@ void *receive(void* connectionfd) {
         pthread_exit(NULL);
     }
 
-    deserlize_packet(buffer);
+    Handler handler = deserialize_packet(buffer);
+    handler(buffer);
+    printf("%p\n", buffer);
     free(buffer);
+    close(*clientfd);
     pthread_exit(NULL);
 }
 
