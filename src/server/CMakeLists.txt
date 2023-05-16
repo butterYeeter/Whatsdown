@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.13) 
-project(server)              
-
-set(SOURCE_FILES server.c)
-
-add_executable(server ${SOURCE_FILES})
+cmake_minimum_required(VERSION 3.13)
+ project(server C)
+ include_directories("/usr/include/libmongoc-1.0")
+ include_directories("/usr/include/libbson-1.0")
+ add_executable(server server.c)
+ target_link_libraries(server /usr/lib/x86_64-linux-gnu/libmongoc-1.0.so.0 /usr/lib/x86_64-linux-gnu/libbson-1.0.so.0)

@@ -1,1 +1,1 @@
-/usr/bin/cc CMakeFiles/server.dir/server.c.o -o server 
+/usr/bin/cc CMakeFiles/server.dir/server.c.o -o server  /usr/lib/x86_64-linux-gnu/libmongoc-1.0.so.0 /usr/lib/x86_64-linux-gnu/libbson-1.0.so.0 

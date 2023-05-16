@@ -4,7 +4,7 @@
 # compile C with /usr/bin/cc
 C_DEFINES = 
 
-C_INCLUDES = 
+C_INCLUDES = -I/usr/include/libmongoc-1.0 -I/usr/include/libbson-1.0
 
 C_FLAGS = 
 
