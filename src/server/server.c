@@ -10,23 +10,22 @@
 #include <pthread.h>
 #include <mongoc/mongoc.h>
 
-
+#define NETWORKING_IMPLEMENTATION
+#include "../networking/networking.h"
 
 typedef struct sockaddr info;
 
 void *receive(void* connectionfd) {
-    printf("thread creation success!\n");
     int *clientfd = (int*) connectionfd;
     char *buffer = malloc(sizeof(char) * 1024);
     bzero(buffer, 1024);
     int n = read(*clientfd, buffer, 1024);
-    printf("Read status: %d\n", n);
     if(n < 0) {
         printf("Error recieving data from client\n");
         pthread_exit(NULL);
     }
 
-    printf("hello world lol\t%p\n", buffer);
+    deserlize_packet(buffer);
     free(buffer);
     pthread_exit(NULL);
 }
@@ -54,7 +53,6 @@ int main()
 	while(true) {
         pthread_t thread_id;
         connectionfd = accept(serverfd, (info*)&serversock, &serversockLen);
-        printf("Connectonfd:%d\n", connectionfd);
 		if(connectionfd < 0) {return 4;}
 		pthread_create(&thread_id, NULL, &receive, &connectionfd);
 	}
