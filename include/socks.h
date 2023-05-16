@@ -44,10 +44,13 @@ void socket_connect(Socket *socket, char *ip, int port) {
     address.sin_port = htons(port);
     socket->address = address;
     int status = connect(socket->socket, (struct sockaddr*)&address, sizeof(address));
+    printf("%d\n", status);
 }
 
 void socket_send(Socket *socket, void *packet, size_t packet_size) {
-    send(socket->socket, packet, packet_size, 0);
+    if (send(socket->socket, packet, packet_size, 0) != packet_size) {
+        printf("Sending failed...\n");
+    }
 }
 
 char *socket_read(Socket *socket) {

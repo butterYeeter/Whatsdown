@@ -33,8 +33,7 @@ void *receive(void *args) {
 
 
 int main() {
-    Socket client = socket_new(AF_INET, SOCK_STREAM);
-    socket_connect(&client, "127.0.0.1", 12345);
+
 
     pthread_t t;
 
@@ -53,26 +52,28 @@ int main() {
     password[strcspn(password, "\n")] = 0;
     username[strcspn(username, "\n")] = 0;
 
+    Socket client = socket_new(AF_INET, SOCK_STREAM);
+    socket_connect(&client, "10.200.1.5", 5555);
+
     char *hash = malloc(sizeof(char) * 257);
     sha256_easy_hash_hex(password, strlen(password), hash);
     printf("%s\n", hash);
 
     int ret = 0;
     LoginRequest request = (LoginRequest){.username=username, .hash=hash};
-    char *buffer = serialize_login_request(request);
-    printf("buffer = %p\n", buffer);
-    
-    // int type;
-    // int reader = 0;
-    // read_int(buffer, reader, &type);
-    // printf("type = %d\n", type);
-    socket_send(&client, buffer, 1024);    
+    char *packet = serialize_login_request(request);
+    printf("buffer = %p\n", packet);
+    deserlize_packet(packet);
 
-    free(hash);
-    free(password);
-    free(username);
+    socket_send(&client, packet, 1024);    
+    printf("sent sucess!\n");
 
-    pthread_create(&t, NULL, &receive, &client);
-    pthread_exit(NULL);
+
+    // free(hash); 
+    // free(password);
+    // free(username);
+
+    // pthread_create(&t, NULL, &receive, &client);
+    // pthread_exit(NULL);
     return 0;
 }

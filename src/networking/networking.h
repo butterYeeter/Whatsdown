@@ -13,9 +13,10 @@ typedef struct {
 int copy_int(char *buffer, int data, int writer);
 int copy_string(char *buffer, char *str, int writer);
 int read_int(char *buffer, int reader, int *ret);
-char *read_string(char *buffer, int reader, char **ret);
+int read_string(char *buffer, int reader, char **ret);
 
 char *serialize_login_request(LoginRequest req);
+char *deserlize_packet(char *buffer);
 #endif
 
 #ifdef NETWORKING_IMPLEMENTATION
@@ -41,11 +42,20 @@ int read_int(char *buffer, int reader, int *ret) {
     return reader;
 } 
 
-char *read_string(char *buffer, int reader, char **ret) {
+int read_string(char *buffer, int reader, char **ret) {
     int length;
     reader = read_int(buffer, reader, &length);
-    printf("string length = %d\n", length);
-    return NULL;
+
+    char *str = malloc(length + 1);
+    int i;
+    for (i = 0; i < length; i++) {
+        str[i] = buffer[reader];
+        reader++;
+    }
+    str[i] = '\0';
+
+    *ret = str; 
+    return reader;
 }
 
 char *serialize_login_request(LoginRequest req) {
@@ -55,6 +65,23 @@ char *serialize_login_request(LoginRequest req) {
     writer = copy_string(buffer, req.username, writer);
     writer = copy_string(buffer, req.hash, writer);
     return buffer;
+}
+
+char *deserlize_packet(char *buffer) {
+    int type;
+    int reader = 0;
+    reader = read_int(buffer, reader, &type);
+    switch ((PacketType)type) {
+        case TP_LoginRequest: 
+            char *username;
+            char *hash;
+            reader = read_string(buffer, reader, &username);
+            reader = read_string(buffer, reader, &hash);
+            
+            printf("username = %s\n", username);
+            printf("hash = %s\n", hash);
+
+    }    
 }
 
 #endif
