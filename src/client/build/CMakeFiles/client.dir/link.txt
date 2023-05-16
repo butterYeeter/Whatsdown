@@ -1,1 +1,1 @@
-/usr/bin/cc CMakeFiles/client.dir/client.c.o -o client 
+/usr/bin/cc CMakeFiles/client.dir/client.c.o -o client  -ldl -lutil 

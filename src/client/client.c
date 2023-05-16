@@ -10,32 +10,69 @@
 
 #include "../../include/hash.c"
 
-void* receive(void *args)
-{   
+void *receive(void *args) {   
     #ifdef DEBUG
     printf("[DEBUG]: Starting receive thread\n");
     #endif
+
     Socket *socket = (Socket *)args;
     while (true) {
         char *data;
         if ((data = socket_read(socket)) != NULL) {
             printf("%p\n", data);
         }
+        else {
+        }   
     }
-    return NULL;
 }
    
 #define COLOR(r, g, b) printf("\033[38;2;"#r";"#g";"#b"m");
 
 typedef enum {
-    TP_LoginRequest,
+    TP_LoginRequest = 0,
 } PacketType;
 
 typedef struct {
-    PacketType type;
-    const char *username;
-    const char *hash;
+    char *username;
+    char *hash;
 } LoginRequest;
+
+int copy_int(char *buffer, int data, int writer) {
+    buffer[writer] = (char)data;
+    writer++;
+    return writer;
+}
+
+int copy_string(char *buffer, char *str, int writer) {
+    writer = copy_int(buffer, strlen(str), writer);
+    for (int i = 0; i < strlen(str); i++) {
+        buffer[writer] = str[i];
+        writer++;
+    }
+    return writer;
+}
+
+int read_int(char *buffer, int reader, int *ret) {
+    *ret = (int)buffer[reader];
+    reader++;
+    return reader;
+} 
+
+char *read_string(char *buffer, int reader, char **ret) {
+    int length;
+    reader = read_int(buffer, reader, length);
+    printf("string length = %d\n", length);
+    return NULL;
+}
+
+char *serialize_login_request(LoginRequest req) {
+    char *buffer = malloc(1024);
+    int writer = 0;
+    writer = copy_int(buffer, (int)TP_LoginRequest, writer);
+    writer = copy_string(buffer, req.username, writer);
+    writer = copy_string(buffer, req.hash, writer);
+    return buffer;
+}
 
 int main() {
     Socket client = socket_new(AF_INET, SOCK_STREAM);
@@ -63,15 +100,21 @@ int main() {
     printf("%s\n", hash);
 
     int ret = 0;
-    pthread_create(&t, NULL, &receive, &client);
-
-    LoginRequest request = (LoginRequest){.type=TP_LoginRequest, .username=username, .hash=hash};
-    socket_send(&client, &request, sizeof(request));    
+    LoginRequest request = (LoginRequest){.username=username, .hash=hash};
+    char *buffer = serialize_login_request(request);
+    printf("buffer = %p\n", buffer);
     
+    // int type;
+    // int reader = 0;
+    // read_int(buffer, reader, &type);
+    // printf("type = %d\n", type);
+    socket_send(&client, buffer, 1024);    
+
     free(hash);
     free(password);
     free(username);
 
-    pthread_exit(&ret);
+    pthread_create(&t, NULL, &receive, &client);
+    pthread_exit(NULL);
     return 0;
 }
