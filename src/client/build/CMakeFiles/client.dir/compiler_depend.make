@@ -102,6 +102,7 @@ CMakeFiles/client.dir/client.c.o: ../client.c \
   /usr/include/x86_64-linux-gnu/bits/getopt_core.h \
   /usr/include/x86_64-linux-gnu/bits/unistd_ext.h \
   /usr/include/arpa/inet.h \
+  /home/scriptline/programming/Whatsdown/src/networking/networking.h \
   /home/scriptline/programming/Whatsdown/include/hash.c
 
 
@@ -304,6 +305,8 @@ CMakeFiles/client.dir/client.c.o: ../client.c \
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
 /usr/include/x86_64-linux-gnu/bits/atomic_wide_counter.h:
+
+/home/scriptline/programming/Whatsdown/src/networking/networking.h:
 
 /usr/include/x86_64-linux-gnu/bits/struct_rwlock.h:
 
