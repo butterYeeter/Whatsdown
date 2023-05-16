@@ -25,6 +25,7 @@ void *receive(void *args) {
             printf("%p\n", data);
         }
         else {
+
         }   
     }
 }
@@ -33,8 +34,6 @@ void *receive(void *args) {
 
 
 int main() {
-
-
     pthread_t t;
 
     char *username = malloc(sizeof(char) * 30);
@@ -48,7 +47,11 @@ int main() {
     printf("Username: ");
     fgets(username, 30, stdin);
 
-    password = getpass("Password: ");
+    printf("Password: ");
+    printf("\033[8m");
+    fgets(password, 30, stdin);
+    printf("\033[28m");
+
     password[strcspn(password, "\n")] = 0;
     username[strcspn(username, "\n")] = 0;
 
@@ -62,17 +65,15 @@ int main() {
     int ret = 0;
     LoginRequest request = (LoginRequest){.username=username, .hash=hash};
     char *packet = serialize_login_request(request);
-    printf("buffer = %p\n", packet);
-    Handler handler = deserialize_packet(packet);
-    handler(packet);
 
     socket_send(&client, packet, 1024);    
-    printf("sent sucess!\n");
 
+    free(hash); 
+    free(password);
+    free(username);
+    free(packet);
 
-    // free(hash); 
-    // free(password);
-    // free(username);
+    close(client.socket);
 
     // pthread_create(&t, NULL, &receive, &client);
     // pthread_exit(NULL);
