@@ -52,8 +52,11 @@ void socket_send(Socket *socket, void *packet, size_t packet_size) {
 
 char *socket_read(Socket *socket) {
     void *buffer = malloc(1024);
-    read(socket->socket, buffer, 1024);
-    return buffer;
+    if (read(socket->socket, buffer, 1024) != -1) {
+        return buffer;
+    }
+    free(buffer);
+    return NULL;
 }
 
 void socket_listen(Socket *socket) {
