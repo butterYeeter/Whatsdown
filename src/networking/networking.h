@@ -10,6 +10,13 @@ typedef struct {
     char *hash;
 } LoginRequest;
 
+typedef struct {
+    char *from;
+    char *to;
+    char *payload;
+} Text;
+
+
 int copy_int(char *buffer, int data, int writer);
 int copy_string(char *buffer, char *str, int writer);
 int read_int(char *buffer, int reader, int *ret);

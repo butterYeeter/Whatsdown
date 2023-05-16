@@ -1,4 +1,4 @@
-# Install script for directory: /home/raaid/Documents/whatsdown/src/server
+# Install script for directory: /home/scriptline/programming/Whatsdown/src/server
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/raaid/Documents/whatsdown/src/server/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/scriptline/programming/Whatsdown/src/server/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

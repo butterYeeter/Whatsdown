@@ -11,6 +11,7 @@
 
 typedef struct {
     int socket;
+    bool connected;
     struct sockaddr_in address;
 } Socket;
 
@@ -34,6 +35,7 @@ void socket_bind(Socket *socket, char *ip, int port) {
     address.sin_addr.s_addr = inet_addr(ip);;
     address.sin_port = htons(port);
     socket->address = address;
+    socket->connected = false;
     bind(socket->socket, (struct sockaddr*)&address, sizeof(address));
 }
 
@@ -45,11 +47,16 @@ void socket_connect(Socket *socket, char *ip, int port) {
     socket->address = address;
     int status = connect(socket->socket, (struct sockaddr*)&address, sizeof(address));
     printf("%d\n", status);
+    if (status != -1) {
+        socket->connected = true;
+    }
 }
 
 void socket_send(Socket *socket, void *packet, size_t packet_size) {
-    if (send(socket->socket, packet, packet_size, 0) != packet_size) {
-        printf("Sending failed...\n");
+    if (socket->connected) {
+        if (send(socket->socket, packet, packet_size, 0) != packet_size) {
+            printf("Sending failed...\n");
+        }
     }
 }
 
