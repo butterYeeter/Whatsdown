@@ -63,7 +63,8 @@ int main() {
     LoginRequest request = (LoginRequest){.username=username, .hash=hash};
     char *packet = serialize_login_request(request);
     printf("buffer = %p\n", packet);
-    deserlize_packet(packet);
+    Handler handler = deserialize_packet(packet);
+    handler(packet);
 
     socket_send(&client, packet, 1024);    
     printf("sent sucess!\n");

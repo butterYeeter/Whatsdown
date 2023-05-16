@@ -67,20 +67,26 @@ char *serialize_login_request(LoginRequest req) {
     return buffer;
 }
 
-char *deserlize_packet(char *buffer) {
+void deserialize_login_request(char *buffer) {
+    char *username;
+    char *hash;
+    int reader = 1;
+    reader = read_string(buffer, reader, &username);
+    reader = read_string(buffer, reader, &hash);
+    
+    printf("username = %s\n", username);
+    printf("hash = %s\n", hash);
+}
+
+typedef void (*Handler)(char *);
+
+Handler deserialize_packet(char *buffer) {
     int type;
     int reader = 0;
     reader = read_int(buffer, reader, &type);
     switch ((PacketType)type) {
         case TP_LoginRequest: 
-            char *username;
-            char *hash;
-            reader = read_string(buffer, reader, &username);
-            reader = read_string(buffer, reader, &hash);
-            
-            printf("username = %s\n", username);
-            printf("hash = %s\n", hash);
-
+            return deserialize_login_request;
     }    
 }
 
