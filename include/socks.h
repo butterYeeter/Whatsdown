@@ -37,6 +37,10 @@ void socket_bind(Socket *socket, char *ip, int port) {
     socket->address = address;
     socket->connected = false;
     bind(socket->socket, (struct sockaddr*)&address, sizeof(address));
+    if(fcntl(sockfd, F_SETFL, flags | O_NONBLOCK) == -1) {
+        printf("Failed to set error handling!\n");
+        return 4;
+    }
 }
 
 void socket_connect(Socket *socket, char *ip, int port) {
