@@ -10,56 +10,39 @@
 #include <pthread.h>
 #include <mongoc/mongoc.h>
 
+#define SOCKS_IMPLEMENTATION
+#include "../../include/socks.h"
+
+#define SERVER
 #define NETWORKING_IMPLEMENTATION
 #include "../networking/networking.h"
 
 typedef struct sockaddr info;
 
-void *receive(void* connectionfd) {
-    int *clientfd = (int*) connectionfd;
-    char *buffer = malloc(1024);
-    bzero(buffer, 1024);
-    int n = read(*clientfd, buffer, 1024);
-    if(n < 0) {
-        printf("Error recieving data from client\n");
-        pthread_exit(NULL);
-    }
+void *receive(void* conn) {
+    Socket *client = (Socket *)conn;
+	while (true) {
+		char *buffer = socket_read(client);
 
-    Handler handler = deserialize_packet(buffer);
-    handler(buffer);
-    printf("%p\n", buffer);
-    free(buffer);
-    close(*clientfd);
-    pthread_exit(NULL);
+		if (buffer) {
+			Handler handler = deserialize_packet(buffer);
+			handler(buffer);
+		}
+	}
+    
+	return NULL;
 }
 
+int main() {
+	Socket server = socket_new(AF_INET, SOCK_STREAM);
+    socket_bind(&server, "127.0.0.1", 5555);
+	socket_listen(&server);
 
-int main()
-{
-    int serverfd, connectionfd, serversockLen, n;
-	struct sockaddr_in serversock;
-
-	serverfd = socket(AF_INET, SOCK_STREAM, 0);
-	if(serverfd < 0) {return 1;}
-
-	serversock.sin_family = AF_INET;
-	serversock.sin_port = htons(5555);
-	serversock.sin_addr.s_addr = INADDR_ANY;
-
-	serversockLen = sizeof(serversock);
-	n = bind(serverfd, (info*)&serversock, serversockLen);
-	if(n < 0) {return 2;}
-
-	n = listen(serverfd, 10);
-	if(n < 0) {return 3;}
-
-	while(true) {
+	while (true) {
         pthread_t thread_id;
-        connectionfd = accept(serverfd, (info*)&serversock, &serversockLen);
-		if(connectionfd < 0) {return 4;}
-		pthread_create(&thread_id, NULL, &receive, &connectionfd);
+		Socket client = socket_accept(&server);
+		pthread_create(&thread_id, NULL, &receive, (void *)&client);
 	}
 	
-	close(serverfd);
 	return 0;
 }

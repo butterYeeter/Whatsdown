@@ -46,7 +46,6 @@ void socket_connect(Socket *socket, char *ip, int port) {
     address.sin_port = htons(port);
     socket->address = address;
     int status = connect(socket->socket, (struct sockaddr*)&address, sizeof(address));
-    printf("%d\n", status);
     if (status != -1) {
         socket->connected = true;
     }
@@ -62,7 +61,8 @@ void socket_send(Socket *socket, void *packet, size_t packet_size) {
 
 char *socket_read(Socket *socket) {
     void *buffer = malloc(1024);
-    if (read(socket->socket, buffer, 1024) != -1) {
+    int n = read(socket->socket, buffer, 1024);
+    if (n > 0) {
         return buffer;
     }
     free(buffer);

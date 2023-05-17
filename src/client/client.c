@@ -32,11 +32,11 @@ void *receive(void *args) {
    
 #define COLOR(r, g, b) printf("\033[38;2;"#r";"#g";"#b"m");
 
+static char *username;
+static char *hash;
 
-int main() {
-    pthread_t t;
-
-    char *username = malloc(sizeof(char) * 30);
+void get_user_details() {
+    username = malloc(sizeof(char) * 30);
     char *password = malloc(sizeof(char) * 30);
     
     printf("\033[2J");
@@ -55,21 +55,25 @@ int main() {
     password[strcspn(password, "\n")] = 0;
     username[strcspn(username, "\n")] = 0;
 
-    Socket client = socket_new(AF_INET, SOCK_STREAM);
-    socket_connect(&client, "10.200.1.5", 5555);
-
-    char *hash = malloc(sizeof(char) * 257);
+    hash = malloc(sizeof(char) * 257);
     sha256_easy_hash_hex(password, strlen(password), hash);
-    printf("%s\n", hash);
+    free(password);
+}
 
-    int ret = 0;
-    LoginRequest request = (LoginRequest){.username=username, .hash=hash};
-    char *packet = serialize_login_request(request);
+int main() {
+    pthread_t t;
+
+    get_user_details();
+
+    Socket client = socket_new(AF_INET, SOCK_STREAM);
+    socket_connect(&client, "127.0.0.1", 5555);
+    
+    SignupRequest request = (SignupRequest){.username=username, .hash=hash};
+    char *packet = serialize_signup_request(request);
 
     socket_send(&client, packet, 1024);    
 
     free(hash); 
-    free(password);
     free(username);
     free(packet);
 
